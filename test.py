@@ -46,8 +46,8 @@ class App:
     self.enemylist[en].add_res(0, 0, 0, 16, 16, 0, 0, 7)
     self.enemylist[en].add_res(0, 16, 0, 16, 16, 0, 0, 7)
     self.enemylist[en].add_action(
-      [ 0, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4],
-      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  4,  4,  4,  4,  4,  4,  4,  4]
+      [ 0, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  3,  3,  3,  3,  3,  3,  3,  3]
     )
 
     en += 1
@@ -55,8 +55,8 @@ class App:
     self.enemylist[en].add_res(0, 0, 0, 16, 16, 0, 0, 7)
     self.enemylist[en].add_res(0, 16, 0, 16, 16, 0, 0, 7)
     self.enemylist[en].add_action(
-      [ 0, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4],
-      [ 0,  0,  0,  0,  0,  0,  0,  0,  0, -4, -4, -4, -4, -4, -4, -4, -4]
+      [ 0, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0, -3, -3, -3, -3, -3, -3, -3, -3]
     )
 
     # enemy
@@ -73,19 +73,19 @@ class App:
     if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
       pyxel.quit()
 
-    if pyxel.btnp(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
+    if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
       if self.player.y >= self.player.move_y:
         self.player.y -= self.player.move_y
     
-    if pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
+    if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
       if self.player.y <= self._height - self.player.height - self.player.move_y:
         self.player.y += self.player.move_y
     
-    if pyxel.btnp(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
+    if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
       if self.player.x >= self.player.move_x:
         self.player.x -= self.player.move_x
     
-    if pyxel.btnp(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
+    if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
       if self.player.x <= self._width - self.player.width - self.player.move_x:
         self.player.x += self.player.move_x
 
