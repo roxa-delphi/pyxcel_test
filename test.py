@@ -175,7 +175,7 @@ class App:
 
         self.enemy[i].turn  += 1
 
-    # hit player and enemy
+    # hit check for player and enemy
     p_llx = self.player.x + self.playerres.hita_llx[self.player.res_n]
     p_lly = self.player.y + self.playerres.hita_lly[self.player.res_n]
     p_urx = self.player.x + self.playerres.hita_urx[self.player.res_n]
@@ -194,6 +194,29 @@ class App:
           #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
           self.isStop = True
           break
+
+    # hit check for player missiles and enemy
+    for i in range(0, self.p_miss_max):
+      if self.p_miss_f[i]:
+        p_llx = self.p_miss[i].x + self.p_missres.hita_llx[0]
+        p_lly = self.p_miss[i].y + self.p_missres.hita_lly[0]
+        p_urx = self.p_miss[i].x + self.p_missres.hita_urx[0]
+        p_ury = self.p_miss[i].y + self.p_missres.hita_ury[0]
+      
+        for j in range(0, self.enemy_max):
+          if self.enemy_f[j] :
+            e_llx = self.enemy[j].x + self.enemylist[self.enemylist_n[j]].hita_llx[self.player.res_n]
+            e_lly = self.enemy[j].y + self.enemylist[self.enemylist_n[j]].hita_lly[self.player.res_n]
+            e_urx = self.enemy[j].x + self.enemylist[self.enemylist_n[j]].hita_urx[self.player.res_n]
+            e_ury = self.enemy[j].y + self.enemylist[self.enemylist_n[j]].hita_ury[self.player.res_n]
+            if max(p_llx, e_llx) < min(p_urx, e_urx) and max(p_lly, e_lly) < min(p_ury, e_ury):
+              print("Hit")
+              print("  miss   %d %d %d %d" %(p_llx, p_lly, p_urx, p_ury))
+              print("  enemy  %d %d %d %d %d" %(i, e_llx, e_lly, e_urx, e_ury))
+              pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
+              pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
+              self.isStop = True
+              break
 
     self.turn += 1
 
