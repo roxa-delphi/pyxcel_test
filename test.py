@@ -198,6 +198,7 @@ class App:
           self.p_miss_f[nm] = True
           self.p_miss[nm].x = self.player.x + self.playerres.fire_x[self.player.res_n]
           self.p_miss[nm].y = self.player.y + self.playerres.fire_y[self.player.res_n]
+          pyxel.play(1, 0)
 
     # change player resource
     if self.player.turn % 5 == 0:
@@ -357,6 +358,7 @@ class App:
               self.enemy[j].res_n   = 0
               self.enemy[j].isAlive = False
               self.p_miss_f[i]      = False
+              pyxel.play(2, 1)
               #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
               #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
               break
