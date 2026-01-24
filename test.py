@@ -136,7 +136,7 @@ class App:
 
   def update(self):
     # "Q" for quit
-    if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
+    if pyxel.btnp(pyxel.KEY_Q):
       pyxel.quit()
 
     # Gate stop
@@ -148,7 +148,7 @@ class App:
       
       self.player.turn += 1
 
-      if pyxel.btnp(pyxel.KEY_S):
+      if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
         self.start()
         self.isStop = False
       return
