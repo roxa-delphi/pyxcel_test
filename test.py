@@ -53,7 +53,7 @@ class App:
 
     self.p_missres = CharaResource()
     self.p_missres.add_res(0, 38, 23, 4, 2, 12)
-    self.p_missres.add_hita(6, 7, 9, 8)
+    self.p_missres.add_hita(0, 0, 4, 2)
 
     # player missile settings
     for i in range(0, self.p_miss_max):
@@ -98,7 +98,7 @@ class App:
     # enemy missiles
     self.enemymissres = CharaResource()
     self.enemymissres.add_res(0, 39, 7, 2, 2, 12)
-    self.enemymissres.add_hita(39, 7, 40, 8)
+    self.enemymissres.add_hita(0, 0, 1, 1)
     for i in range(0, self.enemymiss_max):
       self.enemymiss_f.append(False)
       self.enemymiss.append(Chara(0, 0, 0, 0))
@@ -214,7 +214,7 @@ class App:
         if self.enemy[i].isAlive:
           self.enemy[i].x += self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n]
           self.enemy[i].y += self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n]
-          print("enemy %d turn %d move n %d x %d y %d attack %d" %(i, self.enemy[i].turn, self.enemy[i].charamove_n, self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.attack[self.enemy[i].charamove_n]))
+          #print("enemy %d turn %d move n %d x %d y %d attack %d" %(i, self.enemy[i].turn, self.enemy[i].charamove_n, self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.attack[self.enemy[i].charamove_n]))
 
           # fire
           if self.enemylist[self.enemylist_n[i]].charamove.attack[self.enemy[i].charamove_n] == 1:
@@ -225,7 +225,7 @@ class App:
                 break
             if nm != -1:
               self.enemymiss_f[nm] = True
-              print("enemymiss %d" %(nm))
+              #print("enemymiss %d" %(nm))
               self.enemymiss[nm].x = self.enemy[i].x + self.enemylist[self.enemylist_n[i]].fire_x[self.enemy[i].res_n]
               self.enemymiss[nm].y = self.enemy[i].y + self.enemylist[self.enemylist_n[i]].fire_y[self.enemy[i].res_n]
               dx = self.player.x + self.player.width  / 2 - self.enemymiss[nm].x
@@ -288,6 +288,27 @@ class App:
             #self.isStop = True
             break
 
+    # hit check for player and enemy missiles
+    if self.player.isAlive:
+      for i in range(0, self.enemymiss_max):
+        e_llx = self.enemymiss[i].x + self.enemymissres.hita_llx[0]
+        e_lly = self.enemymiss[i].y + self.enemymissres.hita_lly[0]
+        e_urx = self.enemymiss[i].x + self.enemymissres.hita_urx[0]
+        e_ury = self.enemymiss[i].y + self.enemymissres.hita_ury[0]
+        #print("  player %d %d %d %d" %(p_llx, p_lly, p_urx, p_ury))
+        #print("  enemymiss  %d %d %d %d %d %d %d" %(i, self.enemymiss[i].x, self.enemymiss[i].y, e_llx, e_lly, e_urx, e_ury))
+        if max(p_llx, e_llx) <= min(p_urx, e_urx) and max(p_lly, e_lly) <= min(p_ury, e_ury):
+          self.player.turn    = 1
+          self.player.res_n   = 0
+          self.player.isAlive = False
+          #print("Hit")
+          #print("  player %d %d %d %d" %(p_llx, p_lly, p_urx, p_ury))
+          #print("  enemymiss  %d %d %d %d %d %d %d" %(i, self.enemymiss[i].x, self.enemymiss[i].y, e_llx, e_lly, e_urx, e_ury))
+          #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
+          #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
+          #self.isStop = True
+          break
+
     # hit check for player missiles and enemy
     for i in range(0, self.p_miss_max):
       if self.p_miss_f[i]:
@@ -341,6 +362,11 @@ class App:
           self.p_missres.res_h[self.p_miss[i].res_n],
           self.p_missres.res_col[self.p_miss[i].res_n]
         )
+        #p_llx = self.p_miss[i].x + self.p_missres.hita_llx[0]
+        #p_lly = self.p_miss[i].y + self.p_missres.hita_lly[0]
+        #p_urx = self.p_miss[i].x + self.p_missres.hita_urx[0]
+        #p_ury = self.p_miss[i].y + self.p_missres.hita_ury[0]
+        #pyxel.rect(p_llx, p_lly, p_urx - p_llx + 1, p_ury - p_lly + 1, 0)
     
     # Enemy
     for i in range(0, self.enemy_max):
@@ -373,16 +399,21 @@ class App:
     # Enemy missles
     for i in range(0, self.enemymiss_max):
       if self.enemymiss_f[i]:
-       pyxel.blt(
-         self.enemymiss[i].x,
-         self.enemymiss[i].y,
-         self.enemymissres.res_page[0],
-         self.enemymissres.res_u[0],
-         self.enemymissres.res_v[0],
-         self.enemymissres.res_w[0],
-         self.enemymissres.res_h[0],
-         self.enemymissres.res_col[0]
-       )
+        pyxel.blt(
+          self.enemymiss[i].x,
+          self.enemymiss[i].y,
+          self.enemymissres.res_page[0],
+          self.enemymissres.res_u[0],
+          self.enemymissres.res_v[0],
+          self.enemymissres.res_w[0],
+          self.enemymissres.res_h[0],
+          self.enemymissres.res_col[0]
+        )
+        #e_llx = self.enemymiss[i].x + self.enemymissres.hita_llx[0]
+        #e_lly = self.enemymiss[i].y + self.enemymissres.hita_lly[0]
+        #e_urx = self.enemymiss[i].x + self.enemymissres.hita_urx[0]
+        #e_ury = self.enemymiss[i].y + self.enemymissres.hita_ury[0]
+        #pyxel.rect(e_llx, e_lly, e_urx - e_llx + 1, e_ury - e_lly + 1, 0)
 
     # Player
     if self.player.isAlive:
