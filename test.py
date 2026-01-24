@@ -15,7 +15,7 @@ class App:
   _width  = 300		# screen width
   _height = 200		# screen height
 
-  isStop     = False	# Game stop
+  isStop     = True	# Game stop
 
   turn = 0		# number of turn (frame)
   hit  = 0		# number of hit
@@ -109,17 +109,29 @@ class App:
       self.enemymiss.append(Chara(0, 0, 3, 3))
 
 
-    self.start()
+    #self.start()
 
     pyxel.run(self.update, self.draw)
 
 
   def start(self):
-    self.turn         = 0
-    self.hit          = 0
-    self.isAlive      = True
-    self.player.turn  = 0
-    self.player.res_n = 0
+    self.isStop         = False
+    self.turn           = 0
+    self.hit            = 0
+    self.player.x       = 40
+    self.player.y       = 80
+    self.player.turn    = 0
+    self.player.res_n   = 0
+    self.player.isAlive = True
+
+    for i in range(0, self.p_miss_max):
+      self.p_miss_f[i] = False
+
+    for i in range(0, self.enemy_max):
+      self.enemy_f[i] = False
+
+    for i in range(0, self.enemymiss_max):
+      self.enemymiss_f[i] = False
 
 
   def update(self):
@@ -129,6 +141,16 @@ class App:
 
     # Gate stop
     if self.isStop:
+      if self.player.turn % 5 == 0:
+        self.player.res_n += 1
+        if self.player.res_n == self.playerres.res_max:
+          self.player.res_n = 0
+      
+      self.player.turn += 1
+
+      if pyxel.btnp(pyxel.KEY_S):
+        self.start()
+        self.isStop = False
       return
 
     # "Up" key
@@ -186,7 +208,10 @@ class App:
       else:
         self.player.res_n += 1
         if self.player.res_n == self.playerres.burn_max:
-          self.isStop = True 
+          self.isStop       = True 
+          self.player.turn  = 0
+          self.player.res_n = 0
+          return
 
     self.player.turn += 1
     
@@ -299,17 +324,18 @@ class App:
     # hit check for player and enemy missiles
     if self.player.isAlive:
       for i in range(0, self.enemymiss_max):
-        e_llx = self.enemymiss[i].x + self.enemymissres.hita_llx[0]
-        e_lly = self.enemymiss[i].y + self.enemymissres.hita_lly[0]
-        e_urx = self.enemymiss[i].x + self.enemymissres.hita_urx[0]
-        e_ury = self.enemymiss[i].y + self.enemymissres.hita_ury[0]
-        if max(p_llx, e_llx) <= min(p_urx, e_urx) and max(p_lly, e_lly) <= min(p_ury, e_ury):
-          self.player.turn    = 1
-          self.player.res_n   = 0
-          self.player.isAlive = False
-          #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
-          #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
-          break
+        if self.enemymiss_f[i]:
+          e_llx = self.enemymiss[i].x + self.enemymissres.hita_llx[0]
+          e_lly = self.enemymiss[i].y + self.enemymissres.hita_lly[0]
+          e_urx = self.enemymiss[i].x + self.enemymissres.hita_urx[0]
+          e_ury = self.enemymiss[i].y + self.enemymissres.hita_ury[0]
+          if max(p_llx, e_llx) <= min(p_urx, e_urx) and max(p_lly, e_lly) <= min(p_ury, e_ury):
+            self.player.turn    = 1
+            self.player.res_n   = 0
+            self.player.isAlive = False
+            #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
+            #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
+            break
 
     # hit check for player missiles and enemy
     for i in range(0, self.p_miss_max):
@@ -340,10 +366,22 @@ class App:
 
 
   def draw(self):
+    pyxel.cls(12)
+
     if self.isStop:
+      pyxel.blt(
+        self._width / 2 - self.player.width,
+        self._height / 2 - self.player.height,
+        self.playerres.res_page[self.player.res_n],
+        self.playerres.res_u[self.player.res_n],
+        self.playerres.res_v[self.player.res_n],
+        self.playerres.res_w[self.player.res_n],
+        self.playerres.res_h[self.player.res_n],
+        self.playerres.res_col[self.player.res_n],
+      )
+      pyxel.text(100, 150, "Push \"s\" key to start", 7)
       return
 
-    pyxel.cls(12)
 
     #pyxel.text(0, 4, "Turn " + str(self.turn).zfill(6), 7)
     pyxel.text(250, 4, "Hit " + str(self.hit).zfill(4), 7)
