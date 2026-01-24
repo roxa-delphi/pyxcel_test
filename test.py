@@ -31,6 +31,11 @@ class App:
   enemy       = []
   enemylist_n = []
 
+  enemymiss_max = 20
+  enemymiss_f   = []
+  enemymiss     = []
+  enemymissres  = None
+
   enemylist_max = 2
   enemylist     = []
 
@@ -58,15 +63,16 @@ class App:
     # enemy list
     en = 0
     self.enemylist.append(CharaResource())
-    self.enemylist[en].add_res(0, 0, 0, 16, 16, 0, 0, 7)
-    self.enemylist[en].add_res(0, 16, 0, 16, 16, 0, 0, 7)
+    self.enemylist[en].add_res(0, 0, 0, 16, 16, 0, 7, 7)
+    self.enemylist[en].add_res(0, 16, 0, 16, 16, 0, 7, 7)
     self.enemylist[en].add_hita(0, 0, 15, 15)
     self.enemylist[en].add_hita(0, 0, 15, 15)
     self.enemylist[en].add_burn(0, 48, 0, 16, 16, 0)
     self.enemylist[en].add_burn(0, 64, 0, 16, 16, 0)
     self.enemylist[en].add_action(
-      [ 0, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3],
-      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  3,  3,  3,  3,  3,  3,  3,  3]
+      [ 0, -3, -3, -3, -3, -3, -3,  0,  0,  0,  0, -3, -3, -3, -3, -3, -3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  3,  3,  3,  3,  3,  3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0]
     )
 
     en += 1
@@ -78,8 +84,9 @@ class App:
     self.enemylist[en].add_burn(0, 48, 0, 16, 16, 0)
     self.enemylist[en].add_burn(0, 64, 0, 16, 16, 0)
     self.enemylist[en].add_action(
-      [ 0, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3],
-      [ 0,  0,  0,  0,  0,  0,  0,  0,  0, -3, -3, -3, -3, -3, -3, -3, -3]
+      [ 0, -3, -3, -3, -3, -3, -3,  0,  0,  0,  0, -3, -3, -3, -3, -3, -3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -3, -3, -3, -3, -3, -3],
+      [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0]
     )
 
     # enemy
@@ -87,6 +94,15 @@ class App:
       self.enemy_f.append(False)
       self.enemylist_n.append(0)
       self.enemy.append(Chara(0, 0, 0, 0))
+
+    # enemy missiles
+    self.enemymissres = CharaResource()
+    self.enemymissres.add_res(0, 39, 7, 2, 2, 12)
+    self.enemymissres.add_hita(39, 7, 40, 8)
+    for i in range(0, self.enemymiss_max):
+      self.enemymiss_f.append(False)
+      self.enemymiss.append(Chara(0, 0, 0, 0))
+
 
     self.start()
 
@@ -163,6 +179,21 @@ class App:
 
     self.player.turn += 1
     
+    # enemy missles
+    for i in range(0, self.enemymiss_max):
+      if self.enemymiss_f[i]:
+        self.enemymiss[i].x += self.enemymiss[i].move_x
+        self.enemymiss[i].y += self.enemymiss[i].move_y
+
+        if self.enemymiss[i].x < 0:
+          self.enemymiss_f[i] = False
+        if self.enemymiss[i].y < 0:
+          self.enemymiss_f[i] = False
+        if self.enemymiss[i].x > self._width:
+          self.enemymiss_f[i] = False
+        if self.enemymiss[i].y > self._height:
+          self.enemymiss_f[i] = False
+
     # enemy
     if self.turn >= 20:
       if random.random() < 0.15:
@@ -183,7 +214,29 @@ class App:
         if self.enemy[i].isAlive:
           self.enemy[i].x += self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n]
           self.enemy[i].y += self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n]
-          #print("enemy %d turn %d move n %d x %d y %d" %(i, self.enemy[i].turn, self.enemy[i].charamove_n, self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n]))
+          print("enemy %d turn %d move n %d x %d y %d attack %d" %(i, self.enemy[i].turn, self.enemy[i].charamove_n, self.enemylist[self.enemylist_n[i]].charamove.x[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.y[self.enemy[i].charamove_n], self.enemylist[self.enemylist_n[i]].charamove.attack[self.enemy[i].charamove_n]))
+
+          # fire
+          if self.enemylist[self.enemylist_n[i]].charamove.attack[self.enemy[i].charamove_n] == 1:
+            nm = -1
+            for j in range(0, self.enemymiss_max):
+              if not self.enemymiss_f[j]:
+                nm = j
+                break
+            if nm != -1:
+              self.enemymiss_f[nm] = True
+              print("enemymiss %d" %(nm))
+              self.enemymiss[nm].x = self.enemy[i].x + self.enemylist[self.enemylist_n[i]].fire_x[self.enemy[i].res_n]
+              self.enemymiss[nm].y = self.enemy[i].y + self.enemylist[self.enemylist_n[i]].fire_y[self.enemy[i].res_n]
+              dx = self.player.x + self.player.width  / 2 - self.enemymiss[nm].x
+              dy = self.player.y + self.player.height / 2 - self.enemymiss[nm].y
+              if abs(dx) > abs(dy):
+                self.enemymiss[nm].move_x = dx / abs(dx) * 3
+                self.enemymiss[nm].move_y = dy / abs(dx) * 3
+              else:
+                self.enemymiss[nm].move_x = dx / abs(dy) * 3
+                self.enemymiss[nm].move_y = dy / abs(dy) * 3
+              self.enemymiss[nm].turn   = 0
   
           if self.enemy[i].x < 0:
             self.enemy_f[i] = False
@@ -317,6 +370,20 @@ class App:
             self.enemylist[self.enemylist_n[i]].burn_col[self.enemy[i].res_n]
           )
     
+    # Enemy missles
+    for i in range(0, self.enemymiss_max):
+      if self.enemymiss_f[i]:
+       pyxel.blt(
+         self.enemymiss[i].x,
+         self.enemymiss[i].y,
+         self.enemymissres.res_page[0],
+         self.enemymissres.res_u[0],
+         self.enemymissres.res_v[0],
+         self.enemymissres.res_w[0],
+         self.enemymissres.res_h[0],
+         self.enemymissres.res_col[0]
+       )
+
     # Player
     if self.player.isAlive:
       pyxel.blt(

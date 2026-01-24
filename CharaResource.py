@@ -49,8 +49,8 @@ class CharaResource:
     self.hita_urx.append(urx)
     self.hita_ury.append(ury)
 
-  def add_action(self, m_x, m_y):
-    self.charamove     = CharaMove(m_x, m_y)
+  def add_action(self, m_x, m_y, attack):
+    self.charamove     = CharaMove(m_x, m_y, attack)
     self.charamove_num = len(m_x)
 
   def add_burn(self, page, u, v, w, h, col):
