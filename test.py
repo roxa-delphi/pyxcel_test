@@ -15,7 +15,8 @@ class App:
   _width  = 300		# screen width
   _height = 200		# screen height
 
-  isStop     = True	# Game stop
+  #isStop     = True	# Game stop
+  gamemode   = 0	# Game mode (0=menu, 1=on play, 2=game over)
 
   turn = 0		# number of turn (frame)
   hit  = 0		# number of hit
@@ -115,7 +116,7 @@ class App:
 
 
   def start(self):
-    self.isStop         = False
+    self.gamemode       = 1
     self.turn           = 0
     self.hit            = 0
     self.player.x       = 40
@@ -133,6 +134,8 @@ class App:
     for i in range(0, self.enemymiss_max):
       self.enemymiss_f[i] = False
 
+    pyxel.play(0, 2, loop=True)
+
 
   def update(self):
     # "Q" for quit
@@ -140,7 +143,8 @@ class App:
       pyxel.quit()
 
     # Gate stop
-    if self.isStop:
+    if self.gamemode == 0:
+
       if self.player.turn % 5 == 0:
         self.player.res_n += 1
         if self.player.res_n == self.playerres.res_max:
@@ -148,9 +152,9 @@ class App:
       
       self.player.turn += 1
 
-      if pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
+      if pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
         self.start()
-        self.isStop = False
+        self.gamemode = 1
       return
 
     # "Up" key
@@ -209,7 +213,7 @@ class App:
       else:
         self.player.res_n += 1
         if self.player.res_n == self.playerres.burn_max:
-          self.isStop       = True 
+          self.gamemode     = 0
           self.player.turn  = 0
           self.player.res_n = 0
           return
@@ -318,6 +322,8 @@ class App:
             self.player.turn    = 1
             self.player.res_n   = 0
             self.player.isAlive = False
+            pyxel.stop(0)
+            pyxel.play(3, 3)
             #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
             #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
             break
@@ -334,6 +340,8 @@ class App:
             self.player.turn    = 1
             self.player.res_n   = 0
             self.player.isAlive = False
+            pyxel.stop(0)
+            pyxel.play(3, 3)
             #pyxel.rect(p_llx, p_lly, p_urx - p_llx, p_ury - p_lly + 1, 0)
             #pyxel.rect(e_llx, e_lly, e_urx - e_llx, e_ury - e_lly + 1, 0)
             break
@@ -370,10 +378,10 @@ class App:
   def draw(self):
     pyxel.cls(12)
 
-    if self.isStop:
+    if self.gamemode == 0:
       pyxel.blt(
         self._width / 2 - self.player.width,
-        self._height / 2 - self.player.height,
+        self._height / 3 - self.player.height,
         self.playerres.res_page[self.player.res_n],
         self.playerres.res_u[self.player.res_n],
         self.playerres.res_v[self.player.res_n],
@@ -381,7 +389,9 @@ class App:
         self.playerres.res_h[self.player.res_n],
         self.playerres.res_col[self.player.res_n],
       )
-      pyxel.text(100, 150, "Push \"s\" key to start", 7)
+      pyxel.text(120, 110, "Cursor : Move", 7)
+      pyxel.text(120, 120, "  z    : shoot", 7)
+      pyxel.text(110, 150, "Push \"z\" key to start", 7)
       return
 
 
