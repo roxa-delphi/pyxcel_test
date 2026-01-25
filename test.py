@@ -41,6 +41,8 @@ class App:
   enemylist_max = 2	# number of enemy resource
   enemylist     = []	# enemy resources
 
+  bgstar_max   = 30	# number of background star
+  bgstar       = []	# background star
 
   def __init__(self):
 
@@ -109,6 +111,11 @@ class App:
       self.enemymiss_f.append(False)
       self.enemymiss.append(Chara(0, 0, 3, 3))
 
+    # background star
+    for i in range(0, self.bgstar_max):
+      x = random.randrange(0, self._width)
+      y = random.randrange(0, self._height)
+      self.bgstar.append(Chara(x, y, -2, 0))
 
     #self.start()
 
@@ -138,9 +145,23 @@ class App:
 
 
   def update(self):
+
     # "Q" for quit
     if pyxel.btnp(pyxel.KEY_Q):
       pyxel.quit()
+
+    # Game over
+    if self.gamemode == 2:
+      if pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
+        self.gamemode = 0
+      return
+
+    # move background star
+    for i in range(0, self.bgstar_max):
+      self.bgstar[i].x += self.bgstar[i].move_x
+      if self.bgstar[i].x < 0:
+        self.bgstar[i].x = self._width
+        self.bgstar[i].y = random.randrange(0, self._height)
 
     # Gate stop
     if self.gamemode == 0:
@@ -155,12 +176,6 @@ class App:
       if pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
         self.start()
         self.gamemode = 1
-      return
-
-    # Game over
-    if self.gamemode == 2:
-      if pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
-        self.gamemode = 0
       return
 
 
@@ -385,7 +400,12 @@ class App:
 
 
   def draw(self):
-    pyxel.cls(12)
+    #pyxel.cls(12)
+    pyxel.cls(1)
+
+    # background
+    for i in range(0, self.bgstar_max):
+      pyxel.pset(self.bgstar[i].x, self.bgstar[i].y, 13)
 
     if self.gamemode == 0:	# menu
       pyxel.blt(
@@ -398,9 +418,9 @@ class App:
         self.playerres.res_h[self.player.res_n],
         self.playerres.res_col[self.player.res_n],
       )
-      pyxel.text(120, 110, "Cursor : Move", 7)
-      pyxel.text(120, 120, "  z    : shoot", 7)
-      pyxel.text(110, 150, "Push \"z\" key to start", 7)
+      pyxel.text(100, 110, "Move  : Cursor or PAD", 7)
+      pyxel.text(100, 120, "Shoot :  z     or PAD-B button", 7)
+      pyxel.text( 80, 150, "Push \"z\" key or START button to start", 7)
       return
 
     #if self.gamemode == 2:	# game over
@@ -505,7 +525,7 @@ class App:
 
     if self.gamemode == 2:
       pyxel.text(120, 100, str(self.hit) + " hits", 7)
-      pyxel.text(120, 150, "Push \"z\" key", 7)
+      pyxel.text( 80, 150, "Push \"z\" key or START button", 7)
 
 App()
 
